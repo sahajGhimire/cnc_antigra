@@ -31,6 +31,9 @@ def paths_to_svg(paths, width=300.0, height=400.0, stroke_width=0.5,
     min_x, max_x = min(all_x), max(all_x)
     min_y, max_y = min(all_y), max(all_y)
 
+    # For SVG we need Y‑down coordinates. Compute an offset that flips Y around the vertical centre.
+    y_offset = max_y + min_y  # sum of extremes; y_svg = y_offset - y_original
+
     vb_x = min_x - margin
     vb_y = min_y - margin
     vb_w = (max_x - min_x) + 2 * margin
@@ -48,9 +51,10 @@ def paths_to_svg(paths, width=300.0, height=400.0, stroke_width=0.5,
     for path in paths:
         if len(path) < 2:
             continue
-        d = f"M {path[0][0]:.3f},{path[0][1]:.3f}"
+        # Flip Y for SVG (Y‑down) using the pre‑computed offset
+        d = f"M {path[0][0]:.3f},{(y_offset - path[0][1]):.3f}"
         for pt in path[1:]:
-            d += f" L {pt[0]:.3f},{pt[1]:.3f}"
+            d += f" L {pt[0]:.3f},{(y_offset - pt[1]):.3f}"
         svg_lines.append(f'    <path d="{d}"/>')
 
     svg_lines.append('  </g>')

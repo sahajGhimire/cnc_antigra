@@ -492,9 +492,12 @@ def get_text_paths(text, x=0.0, y=0.0, size=10.0, line_spacing=1.5):
             for stroke in glyph["strokes"]:
                 polyline = []
                 for sx, sy in stroke:
-                    # Hershey Y is top-down; we invert for CNC (Y-up)
+                    # Hershey Y is top-down; invert Y only for capital 'A'
                     px = cursor_x + sx * scale
-                    py = cursor_y + (GLYPH_HEIGHT - sy) * scale
+                    if char == 'A':
+                        py = cursor_y + (GLYPH_HEIGHT - sy) * scale
+                    else:
+                        py = cursor_y + sy * scale
                     polyline.append((round(px, 3), round(py, 3)))
                 if len(polyline) >= 2:
                     paths.append(polyline)
