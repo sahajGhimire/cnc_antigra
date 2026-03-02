@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CNC Operating System — Write, Draw, and Engrave with precision G-code control.">
+    <title>CNC Operating System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- ====== Header ====== -->
+    <header id="app-header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="24" height="24" rx="3"/>
+                    <line x1="16" y1="4" x2="16" y2="28"/>
+                    <line x1="4" y1="16" x2="28" y2="16"/>
+                    <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                </svg>
+            </div>
+            <h1>CNC <span class="accent">OS</span></h1>
+        </div>
+        <div class="header-right">
+            <div class="connection-status" id="connection-status">
+                <span class="status-dot disconnected"></span>
+                <span class="status-text">Disconnected</span>
+            </div>
+            <button class="btn btn-sm btn-outline" id="btn-connect" title="Connect to CNC">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path d="M13 7H7v6h6V7z"/><path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h1a2 2 0 012 2v1h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v1a2 2 0 01-2 2h-1v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H6a2 2 0 01-2-2v-1H3a1 1 0 110-2h1V9H3a1 1 0 010-2h1V6a2 2 0 012-2h1V2zM6 6v8h8V6H6z"/></svg>
+                Connect
+            </button>
+        </div>
+    </header>
+
+    <!-- ====== Main Layout ====== -->
+    <main id="app-main">
+        <!-- Sidebar: Mode Tabs -->
+        <nav class="sidebar" id="sidebar">
+            <button class="tab-btn active" data-tab="write" id="tab-write">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span>Write</span>
+            </button>
+            <button class="tab-btn" data-tab="draw" id="tab-draw">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>
+                <span>Draw</span>
+            </button>
+            <button class="tab-btn" data-tab="image" id="tab-image">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Image</span>
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- ====== Writing Mode Panel ====== -->
+            <section class="panel" id="panel-write">
+                <div class="panel-header">
+                    <h2>Writing Mode</h2>
+                    <p class="subtitle">Type or dictate text — converts to stroke font vectors and G-code</p>
+                </div>
+                <div class="panel-body">
+                    <div class="input-group">
+                        <label for="write-text">Text Input</label>
+                        <div class="textarea-wrap">
+                            <textarea id="write-text" rows="4" placeholder="Type your text here..."></textarea>
+                            <button class="mic-btn" id="btn-mic-write" title="Voice input">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="params-row">
+                        <div class="input-group compact">
+                            <label for="write-fontsize">Font Size (mm)</label>
+                            <input type="number" id="write-fontsize" value="10" min="2" max="100" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="write-x">X Origin</label>
+                            <input type="number" id="write-x" value="10" min="0" max="300" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="write-y">Y Origin</label>
+                            <input type="number" id="write-y" value="10" min="0" max="400" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="write-feed">Feed Rate</label>
+                            <input type="number" id="write-feed" value="800" min="50" max="5000" step="50">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-generate" id="btn-generate-write">
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"/></svg>
+                        Generate G-code
+                    </button>
+                </div>
+            </section>
+
+            <!-- ====== Drawing Mode Panel ====== -->
+            <section class="panel hidden" id="panel-draw">
+                <div class="panel-header">
+                    <h2>Drawing Mode</h2>
+                    <p class="subtitle">Select a shape and configure parameters for precision vector output</p>
+                </div>
+                <div class="panel-body">
+                    <div class="shape-picker" id="shape-picker">
+                        <button class="shape-btn active" data-shape="circle" title="Circle">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="20" cy="20" r="14"/></svg>
+                            <span>Circle</span>
+                        </button>
+                        <button class="shape-btn" data-shape="square" title="Square">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="24" height="24"/></svg>
+                            <span>Square</span>
+                        </button>
+                        <button class="shape-btn" data-shape="rectangle" title="Rectangle">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="30" height="20"/></svg>
+                            <span>Rect</span>
+                        </button>
+                        <button class="shape-btn" data-shape="triangle" title="Triangle">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polygon points="20,6 34,34 6,34"/></svg>
+                            <span>Triangle</span>
+                        </button>
+                        <button class="shape-btn" data-shape="polygon" title="Polygon">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polygon points="20,4 36,14 32,32 8,32 4,14"/></svg>
+                            <span>Polygon</span>
+                        </button>
+                        <button class="shape-btn" data-shape="star" title="Star">
+                            <svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polygon points="20,4 24,16 36,16 26,24 30,36 20,28 10,36 14,24 4,16 16,16"/></svg>
+                            <span>Star</span>
+                        </button>
+                    </div>
+
+                    <!-- Dynamic shape params -->
+                    <div class="params-row" id="draw-params">
+                        <div class="input-group compact">
+                            <label for="draw-size">Size (mm)</label>
+                            <input type="number" id="draw-size" value="50" min="5" max="200" step="5">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="draw-cx">Center X</label>
+                            <input type="number" id="draw-cx" value="150" min="0" max="300" step="5">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="draw-cy">Center Y</label>
+                            <input type="number" id="draw-cy" value="200" min="0" max="400" step="5">
+                        </div>
+                        <div class="input-group compact hidden" id="param-sides-group">
+                            <label for="draw-sides">Sides</label>
+                            <input type="number" id="draw-sides" value="6" min="3" max="20" step="1">
+                        </div>
+                        <div class="input-group compact hidden" id="param-points-group">
+                            <label for="draw-points">Points</label>
+                            <input type="number" id="draw-points" value="5" min="3" max="20" step="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-generate" id="btn-generate-draw">
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"/></svg>
+                        Generate G-code
+                    </button>
+                </div>
+            </section>
+
+            <!-- ====== Image Mode Panel ====== -->
+            <section class="panel hidden" id="panel-image">
+                <div class="panel-header">
+                    <h2>Image Mode</h2>
+                    <p class="subtitle">Upload an image — auto-vectorized to stroke contours and G-code</p>
+                </div>
+                <div class="panel-body">
+                    <div class="upload-zone" id="upload-zone">
+                        <input type="file" id="image-input" accept="image/*" hidden>
+                        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <p>Click or drag an image to upload</p>
+                        <span class="hint">PNG, JPG, BMP up to 16 MB</span>
+                    </div>
+                    <div class="params-row">
+                        <div class="input-group compact">
+                            <label for="img-threshold">Threshold</label>
+                            <input type="number" id="img-threshold" value="128" min="0" max="255" step="5">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="img-epsilon">Simplify ε</label>
+                            <input type="number" id="img-epsilon" value="1.5" min="0.1" max="10" step="0.1">
+                        </div>
+                        <div class="input-group compact">
+                            <label>
+                                <input type="checkbox" id="img-invert"> Invert
+                            </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-generate" id="btn-generate-image" disabled>
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"/></svg>
+                        Vectorize &amp; Generate
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ====== Output Area ====== -->
+        <aside class="output-area">
+            <!-- SVG Preview -->
+            <div class="output-card" id="preview-card">
+                <div class="card-header">
+                    <h3>Preview</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-xs btn-ghost" id="btn-download-svg" title="Download SVG" disabled>
+                            <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                            SVG
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-viewport" id="preview-viewport">
+                    <div class="preview-empty">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="3" x2="21" y2="21"/><line x1="21" y1="3" x2="3" y2="21"/></svg>
+                        <p>Generate something to preview</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- G-code Output -->
+            <div class="output-card" id="gcode-card">
+                <div class="card-header">
+                    <h3>G-code</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-xs btn-ghost" id="btn-copy-gcode" title="Copy to clipboard" disabled>
+                            <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/></svg>
+                            Copy
+                        </button>
+                        <button class="btn btn-xs btn-ghost" id="btn-download-gcode" title="Download .gcode" disabled>
+                            <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/></svg>
+                            .gcode
+                        </button>
+                        <button class="btn btn-xs btn-accent" id="btn-stream-gcode" title="Send to CNC" disabled>
+                            <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
+                            Stream
+                        </button>
+                    </div>
+                </div>
+                <pre class="gcode-output" id="gcode-output"><code>; Ready — generate G-code to see output here</code></pre>
+            </div>
+
+            <!-- Warnings -->
+            <div class="output-card warnings-card hidden" id="warnings-card">
+                <div class="card-header">
+                    <h3>Warnings</h3>
+                </div>
+                <ul class="warnings-list" id="warnings-list"></ul>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ====== Connect Modal ====== -->
+    <div class="modal-backdrop hidden" id="connect-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Connect to CNC Machine</h3>
+                <button class="btn btn-xs btn-ghost modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="serial-port">Serial Port</label>
+                    <div class="port-row">
+                        <select id="serial-port">
+                            <option value="COM3">COM3</option>
+                        </select>
+                        <button class="btn btn-xs btn-outline" id="btn-refresh-ports">Refresh</button>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="btn-do-connect">Connect</button>
+                    <button class="btn btn-outline" id="btn-do-disconnect" disabled>Disconnect</button>
+                </div>
+                <p class="modal-status" id="modal-status"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== Loading Overlay ====== -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-text">Generating...</p>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
