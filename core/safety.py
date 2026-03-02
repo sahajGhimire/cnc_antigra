@@ -42,11 +42,11 @@ class SafetyValidator:
                 continue
 
             # Check for pen state commands
-            if 'M3' in line:
+            if 'M3 S10' in line:
                 pen_is_up = False
                 corrected.append(raw_line)
                 continue
-            if 'M5' in line:
+            if 'M3 S70' in line:
                 pen_is_up = True
                 corrected.append(raw_line)
                 continue

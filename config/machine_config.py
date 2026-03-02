@@ -31,8 +31,8 @@ class MachineConfig:
     # ----- G-code Defaults -----
     UNIT_MODE = "G21"        # millimetres
     POSITIONING = "G90"      # absolute
-    PEN_DOWN_CMD = "M3 S90"  # servo pen down
-    PEN_UP_CMD = "M5"        # servo pen up
+    PEN_DOWN_CMD = "M3 S10"  # servo pen down
+    PEN_UP_CMD = "M3 S70"        # servo pen up
 
     # ----- Arc Fitting -----
     ARC_TOLERANCE = 0.1      # mm – max deviation for arc fitting
